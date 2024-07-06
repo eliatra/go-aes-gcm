@@ -2,6 +2,14 @@
 
 A small go library and command line tool (CLI) to encrypt/decrypt data and files.
 
+## Eliatra
+
+- https://github.com/eliatra/go-aes-gcm
+- https://eliatra.com
+- https://www.linkedin.com/company/7116719
+
+Contact: sales@elitara.com
+
 ## Use CLI
 
 The cli reads the secret AES key from an environment variable named `AES_SECRET_KEY`.
@@ -9,10 +17,12 @@ This need to be a string with 16 or 32 bytes (AES-128 or AES-256).
  
 Make sure you have a strong key which is truly random. 
 
-If you only have a human style password set `AES_SECRET_PASSWORD`
-Never use a password directly as key. Use Password-Based Keys (PBK) whereas the key is generated from the password via a key derivation function (KDF) with key stretching like PBKDF2. This what we do with `AES_SECRET_PASSWORD`.
+If you only have a human style password set `AES_SECRET_PASSWORD` environment variable.
+
+Never use a password directly as key. Use Password-Based Keys (PBK) whereas the key is generated from the password via a key derivation function (KDF) with key stretching like PBKDF2. This what we do with the content of `AES_SECRET_PASSWORD`.
+
 The salt for PBKDF2 is a 16 byte wide hardcoded value an we perform 210000 iterations and use HMAC-SHA512 as PRF.
-If a hardcoded salt is not applicable create a truly random key and use `AES_SECRET_KEY`.
+If a hardcoded salt is not applicable create a truly random key and use `AES_SECRET_KEY` env var.
 
 Encrypt/decrypt files
 
@@ -53,6 +63,7 @@ AES GCM has some limitations:
 
 ## License
 
+```
 Copyright 2024 Eliatra
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,3 +77,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+```
