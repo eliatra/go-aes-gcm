@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha512"
+	"encoding/base64"
 	"errors"
 	"os"
 
@@ -36,6 +37,28 @@ func Decrypt(cipherText, secretKey, aad []byte) ([]byte, error) {
 	return plainText, nil
 }
 
+func DecryptFromString(cipherText string, secretKey, aad []byte) ([]byte, error) {
+	decoded, err := base64.StdEncoding.DecodeString(cipherText)
+	if err != nil {
+		return nil, err
+	}
+
+	plainText, err := Decrypt(decoded, secretKey, aad)
+	if err != nil {
+		return nil, err
+	}
+	return plainText, nil
+
+}
+
+func DecryptFromStringToString(cipherText string, secretKey, aad []byte) (string, error) {
+	plainText, err := DecryptFromString(cipherText, secretKey, aad)
+	if err != nil {
+		return "", err
+	}
+	return string(plainText), nil
+}
+
 func Encrypt(plainText, secretKey, aad []byte) ([]byte, error) {
 	aes, err := aes.NewCipher(secretKey)
 	if err != nil {
@@ -60,6 +83,19 @@ func Encrypt(plainText, secretKey, aad []byte) ([]byte, error) {
 	cipherText := gcm.Seal(nonce, nonce, plainText, aad)
 
 	return cipherText, nil
+}
+
+func EncryptStringToString(plainText string, secretKey, aad []byte) (string, error) {
+	return EncryptToString([]byte(plainText), secretKey, aad)
+}
+
+func EncryptToString(plainText, secretKey, aad []byte) (string, error) {
+	cipherText, err := Encrypt(plainText, secretKey, aad)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(cipherText), nil
 }
 
 func EncryptFile(plainTextFile, cipherTextFile string, secretKey []byte) error {
