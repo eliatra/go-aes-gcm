@@ -47,6 +47,7 @@ func main() {
 		return
 	}
 
+	//encrypt|decrypt <source-file> <target-file>
 	if len(os.Args) == 4 {
 		if os.Args[1] == "encrypt" {
 			err := gcm.EncryptFile(os.Args[2], os.Args[3], keyBytes)
@@ -70,7 +71,14 @@ func main() {
 		}
 	}
 
-	if len(os.Args) == 2 {
+	//encrypt|decrypt <aad>
+	if len(os.Args) == 2 || len(os.Args) == 3 {
+		var aad []byte = nil
+
+		if len(os.Args) == 3 {
+			aad = []byte(os.Args[2])
+		}
+
 		if os.Args[1] == "encrypt" {
 			stdin, err := io.ReadAll(os.Stdin)
 			if err != nil {
@@ -79,7 +87,7 @@ func main() {
 				return
 			}
 
-			cipherText, err := gcm.Encrypt(stdin, keyBytes, nil)
+			cipherText, err := gcm.Encrypt(stdin, keyBytes, aad)
 			if err != nil {
 				fmt.Println("ERROR: " + err.Error())
 				os.Exit(-1)
@@ -108,7 +116,7 @@ func main() {
 				return
 			}
 
-			plainText, err := gcm.Decrypt(base64Text[:l], keyBytes, nil)
+			plainText, err := gcm.Decrypt(base64Text[:l], keyBytes, aad)
 			if err != nil {
 				fmt.Println("ERROR: " + err.Error())
 				os.Exit(-1)
